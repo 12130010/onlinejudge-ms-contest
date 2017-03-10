@@ -1,0 +1,9 @@
+{
+  "id": null,
+  "name": "Add two String",
+  "idOwner": 123,
+  "filePath": "abc/problem.pdf",
+  "listTestCase": [],
+  "percentToPass": 100,
+  "timeLimit": 3
+}

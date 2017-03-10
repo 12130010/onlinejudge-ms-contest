@@ -1,0 +1,16 @@
+{
+  "id": null,
+  "name": "Add two String",
+  "idOwner": 123,
+  "filePath": "abc/problem.pdf",
+  "listTestCase": [
+    {
+      "id": null,
+      "idProblem": 0,
+      "inputFilePath": "abc/input.txt",
+      "outputFilePath": "abc/ouput.txt"
+    }
+  ],
+  "percentToPass": 100,
+  "timeLimit": 3
+}

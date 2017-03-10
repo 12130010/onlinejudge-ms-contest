@@ -86,6 +86,11 @@
 			<artifactId>onlinejudge-common-repository</artifactId>
 			<version>${online.judge.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.nhuocquy</groupId>
+			<artifactId>onlinejudge-common-feign</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>
