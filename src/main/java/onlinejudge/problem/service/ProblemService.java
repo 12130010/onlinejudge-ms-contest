@@ -1,6 +1,7 @@
 package onlinejudge.problem.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ public class ProblemService {
 	 */
 	public Problem saveProblem(Problem problem){
 		logger.debug(problem.toString());
+		problem.setUpdateDate(new Date());
 		problem = problemRepository.save(problem);
 		return problem;
 	}

@@ -1,0 +1,10 @@
+{
+  "shortName": "KT-LTNC-HK2",
+  "longName": "Kiem Tra cuối kỳ môn LTNC Học kỳ 2",
+  "description": "Dành cho sinh viên năm nhất đang theo học các lớp LTNC",
+  "startDate": "2017-01-01 12:00:00",
+  "freezeDate": "2017-01-01 12:55:00",
+  "endDate": "2017-01-01 13:00:00",
+  "numberMemPerTeam": 1,
+  "selfRegister": true
+}

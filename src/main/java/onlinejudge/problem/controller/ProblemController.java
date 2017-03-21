@@ -2,9 +2,6 @@ package onlinejudge.problem.controller;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -33,6 +30,7 @@ import onlinejudge.file.dto.GroupResource;
 import onlinejudge.file.dto.MyResource;
 import onlinejudge.file.util.MyFileUtil;
 import onlinejudge.problem.service.ProblemService;
+import onlinejudge.util.MessageSourceUtil;
 
 @Controller
 public class ProblemController implements MessageSourceAware{
@@ -54,6 +52,7 @@ public class ProblemController implements MessageSourceAware{
 	
 	/**
 	 * #problem-001
+	 * Create new Problem
 	 * @param problem
 	 * @return
 	 */
@@ -66,7 +65,6 @@ public class ProblemController implements MessageSourceAware{
 			//update owner
 			problemService.updateProblemOwerByEmail(principal.getName(), problem);
 			problem.setCreatedDate(new Date());
-			problem.setUpdateDate(new Date());
 			problem.increaseVersion();
 			problem = problemService.saveProblem(problem);
 			response = new ResponseEntity<Problem>(problem, HttpStatus.OK);
@@ -82,6 +80,7 @@ public class ProblemController implements MessageSourceAware{
 	
 	/**
 	 * #problem-002
+	 * Update resource for Problem
 	 * @param request
 	 * @return
 	 */
@@ -101,7 +100,7 @@ public class ProblemController implements MessageSourceAware{
 			Problem existProblem = problemService.getProblemById(idProblem);
 			if(existProblem == null){
 				// not exist
-				myResponse = MyResponse.builder().fail().setObj(getMessage("problem.001.notfoud",idProblem)).build();
+				myResponse = MyResponse.builder().fail().setObj(MessageSourceUtil.getMessage(messageSource,"problem.002.notfoud",idProblem)).build();
 				response = new ResponseEntity<MyResponse>(myResponse, HttpStatus.BAD_REQUEST);
 				logger.error("Can't find Problem with idProblem is:" + idProblem);
 			}else{// is exist.
@@ -150,7 +149,7 @@ public class ProblemController implements MessageSourceAware{
 								
 							}else{
 								logger.error("testCaseInput and testCaseOuput must be exist at the sametime.");
-								myResponse = MyResponse.builder().fail().setObj(getMessage("problem.001.tcInOutNotNull")).build();
+								myResponse = MyResponse.builder().fail().setObj(MessageSourceUtil.getMessage(messageSource,"problem.002.tcInOutNotNull")).build();
 								response = new ResponseEntity<MyResponse>(myResponse, HttpStatus.BAD_REQUEST);
 								isTestCaseInOutExist = false;
 							}
@@ -158,7 +157,7 @@ public class ProblemController implements MessageSourceAware{
 						if(isTestCaseInOutExist){
 							if(groupResource.getListResource().isEmpty()){
 								//nothing to update
-								myResponse = MyResponse.builder().fail().setObj(getMessage("problem.001.notThingUpdate")).build();
+								myResponse = MyResponse.builder().fail().setObj(MessageSourceUtil.getMessage(messageSource,"problem.002.notThingUpdate")).build();
 								response = new ResponseEntity<MyResponse>(myResponse, HttpStatus.BAD_REQUEST);
 							}else{
 								// send file to Resource server.. 
@@ -173,7 +172,7 @@ public class ProblemController implements MessageSourceAware{
 									
 									// up file fail
 									logger.error("Upfile to resource server with status: error. " + myResponse.getObj());
-									myResponse = MyResponse.builder().fail().setObj(getMessage("problem.001.failUpLoad")).build();
+									myResponse = MyResponse.builder().fail().setObj(MessageSourceUtil.getMessage(messageSource,"problem.002.failUpLoad")).build();
 									response = new ResponseEntity<MyResponse>(myResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 								}
 							}
@@ -181,12 +180,12 @@ public class ProblemController implements MessageSourceAware{
 					} catch (IOException e) {
 						e.printStackTrace();
 						logger.error(e.getMessage());
-						myResponse = MyResponse.builder().fail().setObj(getMessage("problem.common.serverError", e.getMessage())).build();
+						myResponse = MyResponse.builder().fail().setObj(MessageSourceUtil.getMessage(messageSource,"problem.common.serverError", e.getMessage())).build();
 						response = new ResponseEntity<MyResponse>(myResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 					}
 				}else{
 					// current user is not problem's owner
-					myResponse = MyResponse.builder().fail().setObj(getMessage("problem.001.notOwner", principal.getName())).build();
+					myResponse = MyResponse.builder().fail().setObj(MessageSourceUtil.getMessage(messageSource,"problem.002.notOwner", principal.getName())).build();
 					response = new ResponseEntity<MyResponse>(myResponse, HttpStatus.BAD_REQUEST);
 					logger.error("Current user with email " +principal.getName() +" is not problem's owner");
 				}
@@ -195,16 +194,16 @@ public class ProblemController implements MessageSourceAware{
 		return response;
 	}
 	
-	//#problem-003
-	//TODO Log,...
+	/**
+	 * #problem-003
+	 * Get all Problem belong to current User login.
+	 * @param principal
+	 * @return
+	 */
 	@RequestMapping(value = "problems", method = RequestMethod.GET)
 	public @ResponseBody List<Problem> getListProblemCreatedByCurrentUser(Principal principal){
+		//TODO Log,...
 		return problemService.getListProblemCreateByUserEmail(principal.getName());
 	}
 	
-	private Object getMessage(String code, Object... arg){
-		String message = messageSource.getMessage(code,arg , null);
-		message = MessageFormat.format(message, arg);
-		return new Object[]{code, message};
-	}
 }
