@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,8 +22,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import onlinejudge.contest.service.ContestService;
 import onlinejudge.domain.Contest;
+import onlinejudge.domain.ProblemForContest;
+import onlinejudge.domain.Team;
 import onlinejudge.dto.MyResponse;
-import onlinejudge.util.MessageSourceUtil;
+import onlinejudge.message.util.MessageSourceUtil;
 
 
 @Controller
@@ -40,8 +43,8 @@ public class ContestController implements MessageSourceAware{
 		return "Microservice Contest";
 	}
 	@RequestMapping("/about")
-	public @ResponseBody Contest contest(){
-		return new Contest();
+	public @ResponseBody Team contest(){
+		return new Team();
 	}
 	/**
 	 * #contest-001
@@ -108,6 +111,29 @@ public class ContestController implements MessageSourceAware{
 	@RequestMapping(value = "/contests", method=RequestMethod.GET)
 	public @ResponseBody List<Contest> getContests( Principal principal){
 		return contestService.getListContestCreateByAdminEmail(principal.getName());
+	}
+	
+	/**
+	 * #contest-003
+	 * Add Problem to Contest. List ProblemForContest will replace all old List ProblemForContest existing.
+	 * @param contestID
+	 * @param problemForContests
+	 * @return
+	 */
+	@RequestMapping(value="/contests/{contestID}/problems", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody ProblemForContest[] updateProblemForContest(@PathVariable String contestID,@RequestBody ProblemForContest[] problemForContests){
+		return contestService.updateProblemForContest(contestID, problemForContests);
+	}
+	/**
+	 * #contest-004
+	 * Add Team to Contest. New Team will be appended in to List Team
+	 * @param contestID
+	 * @param team
+	 * @return
+	 */
+	@RequestMapping(value="/contests/{contestID}/addteam", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody Team addTeamToContest(@PathVariable String contestID,@RequestBody Team team){
+		return contestService.addTeamToContest(contestID, team);
 	}
 	
 	@Override

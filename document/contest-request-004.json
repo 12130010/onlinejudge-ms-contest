@@ -1,0 +1,12 @@
+{
+  "id": null,
+  "name": "Đội 1",
+  "listMember": [
+  	{
+  		"email" : "hoangnhuocquy@csc.com"
+  	},
+  	{
+  		"email" : "hle56@csc.com"
+  	}
+  ],
+}

@@ -29,8 +29,8 @@ import onlinejudge.dto.MyResponse;
 import onlinejudge.file.dto.GroupResource;
 import onlinejudge.file.dto.MyResource;
 import onlinejudge.file.util.MyFileUtil;
+import onlinejudge.message.util.MessageSourceUtil;
 import onlinejudge.problem.service.ProblemService;
-import onlinejudge.util.MessageSourceUtil;
 
 @Controller
 public class ProblemController implements MessageSourceAware{

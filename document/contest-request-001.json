@@ -1,10 +1,16 @@
 {
-  "shortName": "KT-LTNC-HK2",
-  "longName": "Kiem Tra cuối kỳ môn LTNC Học kỳ 2",
-  "description": "Dành cho sinh viên năm nhất đang theo học các lớp LTNC",
-  "startDate": "2017-01-01 12:00:00",
-  "freezeDate": "2017-01-01 12:55:00",
-  "endDate": "2017-01-01 13:00:00",
-  "numberMemPerTeam": 1,
-  "selfRegister": true
+  "id": null,
+  "shortName": "LTNC",
+  "longName": "LẬp Trình Nâng cao",
+  "description": "Danh cho các bạn đang theo học môn LTNC 2017",
+  "adminID": null,
+  "startDate": "21-03-2017 23:45:14",
+  "endDate": "21-03-2017 23:53:14",
+  "freezeDate": "21-03-2017 23:41:14",
+  "status": 0,
+  "listTeam": [],
+  "listJudgeID": [],
+  "listProblem": [],
+  "numberMemPerTeam": 0,
+  "selfRegister": false
 }
