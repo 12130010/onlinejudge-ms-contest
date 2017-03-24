@@ -75,12 +75,17 @@ public class ContestService {
 		//update Problem in ProblemForContest
 		for (ProblemForContest problemForContest : problemForContests) {
 			problemForContest.setProblem(problemRepository.findOne(problemForContest.getProblem().getId()));
-			problemForContest.setId(problemForContest.getProblem().getId());
 		}
 		Contest contest = contestRepository.findOne(contestID);
 		contest.setListProblem(Arrays.asList(problemForContests));
 
-		contestRepository.save(contest);
+		contest = contestRepository.save(contest);
+		
+		//update problemForTeam with new listProblemForContest
+		for (Team team : contest.getListTeam()) {
+			team.updateListProblem(contest.getListProblem());
+		}
+		contest = contestRepository.save(contest);
 		
 		return problemForContests;
 	}
@@ -91,10 +96,14 @@ public class ContestService {
 	 */
 	public Team addTeamToContest(String contestID, Team team) {
 		List<User> listUser = new ArrayList<>();
+		
+		User userTmp;
 		for (User user : team.getListMember()) {
 			Map<String, Object> param = new HashMap<>();
 			param.put("email", user.getEmail());
-			listUser.add(userClient.getUserByEmail(param));
+			userTmp = userClient.getUserByEmail(param);
+			
+			listUser.add(userTmp);
 		}
 		
 		team.setListMember(listUser);
