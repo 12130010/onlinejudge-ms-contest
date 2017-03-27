@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +14,17 @@ import org.springframework.stereotype.Service;
 
 import onlinejudge.contest.client.UserClient;
 import onlinejudge.domain.Contest;
+import onlinejudge.domain.Problem;
 import onlinejudge.domain.ProblemForContest;
+import onlinejudge.domain.ProblemForTeam;
+import onlinejudge.domain.Submit;
 import onlinejudge.domain.Team;
 import onlinejudge.domain.User;
 import onlinejudge.repository.ContestRepository;
+import onlinejudge.repository.ProblemForContestRepository;
 import onlinejudge.repository.ProblemRepository;
+import onlinejudge.repository.SubmitRepository;
+import onlinejudge.repository.TeamRepository;
 
 @Service
 public class ContestService {
@@ -28,7 +35,16 @@ public class ContestService {
 
 	@Autowired
 	ProblemRepository problemRepository;
-
+	
+	@Autowired
+	TeamRepository teamReposotory;
+	
+	@Autowired
+	SubmitRepository submitReposotory;
+	
+	@Autowired
+	ProblemForContestRepository problemForContestRepository;
+	
 	@Autowired
 	UserClient userClient;
 
@@ -112,9 +128,43 @@ public class ContestService {
 		contest.getListTeam().add(team);
 		
 		team.setIdContest(contestID);
+		team.updateListProblem(contest.getListProblem());
 		
 		contest = contestRepository.save(contest);
 		
 		return contest.getListTeam().get(contest.getListTeam().size() -1 );
+	}
+	
+	/**
+	 * Add Submit of ProblemForTeam to Team.
+	 * @param submit
+	 * @return
+	 */
+	public Submit addSubmitToTeam(Submit submit){
+		boolean submitIsNew = StringUtils.isEmpty(submit.getId());
+		submit = submitReposotory.save(submit);
+		
+		if(submit.isResolve()){ // check resolve Problem
+			Team team = teamReposotory.findOne(submit.getIdTeam());
+			ProblemForTeam problemForTeam = team.getProblemForTeamById(submit.getIdProblemForTeam());
+			if(!problemForTeam.isResolve()){
+				problemForTeam.setResolve(true);
+				teamReposotory.save(team);
+			}
+		}
+		
+		if(submitIsNew){ // it was not be created.
+			Team team = teamReposotory.findOne(submit.getIdTeam());
+			ProblemForTeam problemForTeam = team.getProblemForTeamById(submit.getIdProblemForTeam());
+			problemForTeam.addSubmit(submit);
+			teamReposotory.save(team);
+		}
+		
+		return submit;
+	}
+	
+	public Problem getProblemByProblemForContestId(String problemForContestId){
+		ProblemForContest problemForContest = problemForContestRepository.findOne(problemForContestId);
+		return problemForContest.getProblem();
 	}
 }

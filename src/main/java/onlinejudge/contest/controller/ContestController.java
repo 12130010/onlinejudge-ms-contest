@@ -18,11 +18,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import onlinejudge.contest.service.ContestService;
 import onlinejudge.domain.Contest;
+import onlinejudge.domain.Problem;
 import onlinejudge.domain.ProblemForContest;
+import onlinejudge.domain.ProblemForTeam;
+import onlinejudge.domain.Submit;
 import onlinejudge.domain.Team;
 import onlinejudge.dto.MyResponse;
 import onlinejudge.message.util.MessageSourceUtil;
@@ -43,8 +48,8 @@ public class ContestController implements MessageSourceAware{
 		return "Microservice Contest";
 	}
 	@RequestMapping("/about")
-	public @ResponseBody Team contest(){
-		return new Team();
+	public @ResponseBody Submit contest(){
+		return new Submit();
 	}
 	/**
 	 * #contest-001
@@ -110,7 +115,22 @@ public class ContestController implements MessageSourceAware{
 	 */
 	@RequestMapping(value = "/contests", method=RequestMethod.GET)
 	public @ResponseBody List<Contest> getContests( Principal principal){
-		return contestService.getListContestCreateByAdminEmail(principal.getName());
+		List<Contest> listContest = contestService.getListContestCreateByAdminEmail(principal.getName());
+		
+		/**
+		 * reduce data unnecessary
+		 * - ProblemForContest
+		 */
+		
+		for (Contest contest : listContest) {
+			for (Team team : contest.getListTeam()) {
+				for (ProblemForTeam problemForTeam : team.getListProblem()) {
+					problemForTeam.setProblemForContest(null);
+				}
+			}
+		}
+		
+		return listContest;
 	}
 	
 	/**
@@ -136,8 +156,31 @@ public class ContestController implements MessageSourceAware{
 		return contestService.addTeamToContest(contestID, team);
 	}
 	
+	/**
+	 * #contest-005
+	 * Add or update Submit of team.
+	 * @param submit
+	 * @return
+	 */
+	@RequestMapping(value="/contests/team/submit", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody Submit addSubmitToTeam(@RequestBody Submit submit){
+		return contestService.addSubmitToTeam(submit);
+	}
+	
+	/**
+	 * #contest=006
+	 * Get Problem by ProblemForContest's id.
+	 * @param problemForContestId
+	 * @return
+	 */
+	@RequestMapping(value ="/contests/problem_for_contest/problem",produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody Problem getProblemByProblemForContestId(@RequestParam(required = true) String problemForContestId){ // problemId is problemForContestId
+		return contestService.getProblemByProblemForContestId(problemForContestId);
+	}
+	
 	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
+	
 }

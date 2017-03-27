@@ -10,7 +10,7 @@ spring:
 security:
   oauth2:
     client:
-      clientId: contesService
+      clientId: contestService
       clientSecret: contestService@password
       accessTokenUri: ${oauth2.client.accessTokenUri}
       grant-type: client_credentials

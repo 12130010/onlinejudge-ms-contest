@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import onlinejudge.contest.client.ResourseClient;
+import onlinejudge.contest.client.ResourceClient;
 import onlinejudge.contest.client.UserClient;
 import onlinejudge.domain.Problem;
 import onlinejudge.dto.MyResponse;
@@ -38,7 +38,7 @@ public class ProblemController implements MessageSourceAware{
 	private MessageSource messageSource;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired
-	ResourseClient resourceClient;
+	ResourceClient resourceClient;
 	@Autowired
 	UserClient userClient;
 	
