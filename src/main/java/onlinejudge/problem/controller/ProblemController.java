@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class ProblemController implements MessageSourceAware{
 	
 	/**
 	 * #problem-001
-	 * Create new Problem
+	 * Create new Problem. Update if Problem have ID
 	 * @param problem
 	 * @return
 	 */
@@ -64,8 +65,10 @@ public class ProblemController implements MessageSourceAware{
 		try {
 			//update owner
 			problemService.updateProblemOwerByEmail(principal.getName(), problem);
-			problem.setCreatedDate(new Date());
-			problem.increaseVersion();
+			
+			if(Strings.isEmpty(problem.getId()))
+				problem.setCreatedDate(new Date());
+			
 			problem = problemService.saveProblem(problem);
 			response = new ResponseEntity<Problem>(problem, HttpStatus.OK);
 			logger.info("Create problem success! - problem: " + problem.getName() +" , Id: " + problem.getId());
@@ -111,7 +114,7 @@ public class ProblemController implements MessageSourceAware{
 					// current user is problem's owner
 					MultipartFile problemFile = request.getFile("problemFile");
 					MultipartFile testCaseInput = request.getFile("testCaseInput");
-					MultipartFile testCaseOuput = request.getFile("testCaseOuput");
+					MultipartFile testCaseOuput = request.getFile("testCaseOutput");
 					
 					GroupResource groupResource = new GroupResource();
 					MyResource myResource= null;
