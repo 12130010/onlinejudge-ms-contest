@@ -17,12 +17,15 @@ import onlinejudge.domain.TestCase;
 import onlinejudge.file.dto.GroupResource;
 import onlinejudge.file.dto.MyResource;
 import onlinejudge.repository.ProblemRepository;
+import onlinejudge.repository.TestCaseRepository;
 
 @Service
 public class ProblemService {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired
 	ProblemRepository problemRepository;
+	@Autowired
+	TestCaseRepository testCaseRepository;
 	
 	@Autowired
 	UserClient userClient;
@@ -92,7 +95,7 @@ public class ProblemService {
 			|| testCase.getOutputFilePath() == null || testCase.getOutputFilePath().isEmpty()){
 				throw new IllegalArgumentException("InputFile or OutputFile in TestCase must exist together");
 			}
-			problem.clearAllTestCase(); //TODO delete testcase on DB.
+			clearAllTestCase(problem);
 			problem.addTestCase(testCase);
 		}
 	}
@@ -119,5 +122,22 @@ public class ProblemService {
 		String userId = userClient.getUserIDByEmail(param);
 		
 		return  getListProblemCreateByUserId(userId);
+	}
+	
+	public void clearAllTestCase(Problem problem){
+		for (TestCase testCase : problem.getListTestCase()) {
+			testCaseRepository.delete(testCase.getId());
+		}
+		problem.clearAllTestCase();
+	}
+	
+	public void deleteProblem(Problem problem){
+		clearAllTestCase(problem);
+		problemRepository.delete(problem.getId());
+	}
+	
+	public void deleteProblem(String problemID){
+		Problem problem = problemRepository.findOne(problemID);
+		deleteProblem(problem);
 	}
 }

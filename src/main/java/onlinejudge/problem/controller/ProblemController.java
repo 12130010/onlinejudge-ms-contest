@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -207,6 +208,31 @@ public class ProblemController implements MessageSourceAware{
 	public @ResponseBody List<Problem> getListProblemCreatedByCurrentUser(Principal principal){
 		//TODO Log,...
 		return problemService.getListProblemCreateByUserEmail(principal.getName());
+	}
+	
+	
+	/**
+	 * #problem-004
+	 * Delete problem by id
+	 * @param problemId
+	 * @return
+	 */
+	@RequestMapping(value = "problems/delete", method = RequestMethod.POST)
+	public ResponseEntity<MyResponse> deleteProblem(@RequestBody Problem problem){
+		ResponseEntity<MyResponse> response = null;
+		MyResponse myResponse = null;
+		
+		try{
+			problemService.deleteProblem(problem);
+			myResponse = MyResponse.builder().success().build();
+			response = new ResponseEntity<MyResponse>(myResponse, HttpStatus.OK);
+		}catch (Exception e){
+			e.printStackTrace();
+			myResponse = MyResponse.builder().fail().setObj(e.getMessage()).build();
+			response = new ResponseEntity<MyResponse>(myResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return response;
 	}
 	
 }
