@@ -85,15 +85,24 @@ public class ContestService {
 	 * Update List ProblemForContest to Contest.
 	 * 
 	 * @param contestID
-	 * @param problemForContests
+	 * @param listNewProblemForContest
 	 */
-	public ProblemForContest[] updateProblemForContest(String contestID, ProblemForContest[] problemForContests) {
+	public ProblemForContest[] updateProblemForContest(String contestID, ProblemForContest[] listNewProblemForContest) {
 		//update Problem in ProblemForContest
-		for (ProblemForContest problemForContest : problemForContests) {
+		for (ProblemForContest problemForContest : listNewProblemForContest) {
 			problemForContest.setProblem(problemRepository.findOne(problemForContest.getProblem().getId()));
 		}
+		
 		Contest contest = contestRepository.findOne(contestID);
-		contest.setListProblem(Arrays.asList(problemForContests));
+		
+		//clear all old problemForContest
+		List<ProblemForContest> listOldProblemForContest = contest.getListProblem();
+		for (ProblemForContest problemForContest : listOldProblemForContest) {
+			problemForContestRepository.delete(problemForContest.getId());
+		}
+		
+		//add new list ProblemForContest
+		contest.setListProblem(Arrays.asList(listNewProblemForContest));
 
 		contest = contestRepository.save(contest);
 		
@@ -103,7 +112,7 @@ public class ContestService {
 		}
 		contest = contestRepository.save(contest);
 		
-		return problemForContests;
+		return listNewProblemForContest;
 	}
 	/**
 	 * Append new Team to Contest
@@ -117,7 +126,7 @@ public class ContestService {
 		for (User user : team.getListMember()) {
 			Map<String, Object> param = new HashMap<>();
 			param.put("email", user.getEmail());
-			userTmp = userClient.getUserByEmail(param);
+			userTmp = userClient.getUserByEmail2(param);
 			
 			listUser.add(userTmp);
 		}
@@ -153,7 +162,7 @@ public class ContestService {
 			}
 		}
 		
-		if(submitIsNew){ // it was not be created.
+		if(submitIsNew){ // it was not be created. Add it to team and save again.
 			Team team = teamReposotory.findOne(submit.getIdTeam());
 			ProblemForTeam problemForTeam = team.getProblemForTeamById(submit.getIdProblemForTeam());
 			problemForTeam.addSubmit(submit);
@@ -166,5 +175,15 @@ public class ContestService {
 	public Problem getProblemByProblemForContestId(String problemForContestId){
 		ProblemForContest problemForContest = problemForContestRepository.findOne(problemForContestId);
 		return problemForContest.getProblem();
+	}
+
+	public void deleteContest(String contestID) {
+		Contest contest = contestRepository.findOne(contestID);
+		
+		teamReposotory.delete(contest.getListTeam());
+		
+		problemForContestRepository.delete(contest.getListProblem());
+		
+		contestRepository.delete(contest);
 	}
 }

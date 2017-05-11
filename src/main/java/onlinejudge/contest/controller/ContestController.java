@@ -168,7 +168,7 @@ public class ContestController implements MessageSourceAware{
 	}
 	
 	/**
-	 * #contest=006
+	 * #contest-006
 	 * Get Problem by ProblemForContest's id.
 	 * @param problemForContestId
 	 * @return
@@ -176,6 +176,18 @@ public class ContestController implements MessageSourceAware{
 	@RequestMapping(value ="/contests/problem_for_contest/problem",produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody Problem getProblemByProblemForContestId(@RequestParam(required = true) String problemForContestId){ // problemId is problemForContestId
 		return contestService.getProblemByProblemForContestId(problemForContestId);
+	}
+	
+	/**
+	 * #contest-007
+	 * Delete Contest
+	 * @param 
+	 * @return
+	 */
+	@RequestMapping(value="/contests/{contestID}/delete", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody MyResponse addSubmitToTeam(@PathVariable String contestID){
+		contestService.deleteContest(contestID);
+		return MyResponse.builder().success().build();
 	}
 	
 	@Override
