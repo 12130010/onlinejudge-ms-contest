@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
+
 import onlinejudge.contest.client.UserClient;
 import onlinejudge.domain.Contest;
 import onlinejudge.domain.Problem;
@@ -144,6 +146,23 @@ public class ContestService {
 		return contest.getListTeam().get(contest.getListTeam().size() -1 );
 	}
 	
+	public void deleteTeamIncontest(String contestId, String teamID){
+		Contest contest = contestRepository.findOne(contestId);
+		Team team = null;
+		
+		for (Team t : contest.getListTeam()) {
+			if(t.getId().equals(teamID)){
+				team = t;
+				break;
+			}
+		}
+		
+		contest.getListTeam().remove(team);
+		
+		contestRepository.save(contest);
+		teamReposotory.delete(teamID);
+	}
+	
 	/**
 	 * Add Submit of ProblemForTeam to Team.
 	 * @param submit
@@ -185,5 +204,25 @@ public class ContestService {
 		problemForContestRepository.delete(contest.getListProblem());
 		
 		contestRepository.delete(contest);
+	}
+	
+	
+	/**
+	 * Get list contest in which, user is member of team.
+	 * @param emailUser
+	 * @return
+	 */
+	public List<Contest> getListContestUserAsMember(String emailUser){
+		
+		//list team in which user is member.
+		List<Team> listTeamUserIn = teamReposotory.findTeamsByEmailOfMember(emailUser);
+		
+		
+		List<String> listIdContest = new ArrayList<>();
+		for (Team team : listTeamUserIn) {
+			listIdContest.add(team.getIdContest());
+		}
+		
+		return Lists.newArrayList(contestRepository.findAll(listIdContest));
 	}
 }

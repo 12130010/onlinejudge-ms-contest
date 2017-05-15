@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import onlinejudge.contest.service.ContestService;
 import onlinejudge.domain.Contest;
@@ -187,6 +186,28 @@ public class ContestController implements MessageSourceAware{
 	@RequestMapping(value="/contests/{contestID}/delete", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody MyResponse addSubmitToTeam(@PathVariable String contestID){
 		contestService.deleteContest(contestID);
+		return MyResponse.builder().success().build();
+	}
+	
+	/**
+	 * #contest-008
+	 * @param principal
+	 * @return
+	 */
+	@RequestMapping(value="/contests/contest_as_member", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody List<Contest> getAllContestAsMember(Principal principal){
+		return contestService.getListContestUserAsMember(principal.getName());
+	}
+	
+	/**
+	 *  #contest-009
+	 * @param contestID
+	 * @param teamID
+	 * @return
+	 */
+	@RequestMapping(value = "/contest/{contestID}/delete_team/{teamID}")
+	public @ResponseBody MyResponse deleteTeamInContest (@PathVariable String contestID, @PathVariable String teamID){
+		contestService.deleteTeamIncontest(contestID, teamID);
 		return MyResponse.builder().success().build();
 	}
 	
